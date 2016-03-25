@@ -1,33 +1,86 @@
 
 $(document).ready(function(){
 	
-	/*--- Display information modal box ---*/
+  /************
+   * Listeners
+   ************/
+  
+  /*--- Display information modal box ---*/
   	$(".what").click(function(){
     	$(".overlay").fadeIn(1000);
 
   	});
 
-  	/*--- Hide information modal box ---*/
+  /*--- Hide information modal box ---*/
   	$("a.close").click(function(){
   		$(".overlay").fadeOut(1000);
   	});
 
+  /*--- Send guess when submit button clicks ---*/
+  $('#guessButton').click(submitGuess);
+  
+  /*--- Reset or start new game ---*/
+  $('nav a.new').click(newGame);
+
 });
 
-function newGame(){
-  
+var GAME = {
+  running: false,
+  target: setTarget()
 }
 
-function makeGuess(e){
+function setTarget(){
+  return Math.floor((Math.random() * 100) + 1);
+}
+
+function newGame(e){
+  GAME.running = true;
+  GAME.target = setTarget();
+  console.log(GAME.target);
+  clearDisplays();
+}
+
+function endGame(){
+  GAME.running = false;
+  // disable all buttons except New
+}
+
+function clearDisplays(){
+  sendFeedback('Make your Guess!');
+  setGuessCount(0);
+  setGuessList([]);
+  resetGuessInput();
+}
+
+function resetGuessInput(){
+  $('#userGuess').val('');
+}
+
+function setGuessCount(count){
+  $('.game #count').text(count);
+}
+
+function setGuessList(guesses){
+  if (guesses.length < 1){
+    $('.game #guessList').html('');
+  } else {
+    guesses.forEach(function(guess){
+      $('.game #guessList').append('<li>' + guess + '</li>');    
+    });
+  }
+}
+
+function submitGuess(e){
   e.preventDefault();
-  var userGuess = parseInt($('#userGuess').val());
-  var validatedGuess = validateGuess(userGuess);
+  var validatedGuess = validateGuess(parseInt($('#userGuess').val()));
   
   if (validatedGuess.error) {
     sendFeedback(validatedGuess.error);
   } else {
-    sendFeedback('implement ' + validatedGuess.num);
+    evaluateGuess(validatedGuess.guess);
   }
+  
+  resetGuessInput();
 }
 
 function sendFeedback(msg){
@@ -41,13 +94,14 @@ function validateGuess(userGuess){
   } else if ( Number.isNaN(userGuess) || userGuess < 1 || userGuess > 100 ) {
     res.error = 'Must be no. between 1 and 100';
   } else {
-    res.num = userGuess;
+    res.guess = userGuess;
   }
   return res;
 }
 
-/************
- * Listeners
- ************/
- 
- $('#guessButton').click(makeGuess);
+function evaluateGuess(guess){
+  //check for win condition
+  //add guess to list
+  //send feedback
+  sendFeedback('Must implement');
+}
