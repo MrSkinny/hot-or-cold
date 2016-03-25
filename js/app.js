@@ -26,7 +26,8 @@ $(document).ready(function(){
 
 var GAME = {
   running: false,
-  target: setTarget()
+  target: setTarget(),
+  guesses: []
 }
 
 function setTarget(){
@@ -36,8 +37,10 @@ function setTarget(){
 function newGame(e){
   GAME.running = true;
   GAME.target = setTarget();
+  GAME.guesses = [];
   console.log(GAME.target);
-  clearDisplays();
+  DISPLAY.updateDisplays();
+  DISPLAY.sendFeedback('Make your Guess!');
 }
 
 function endGame(){
@@ -45,29 +48,40 @@ function endGame(){
   // disable all buttons except New
 }
 
-function clearDisplays(){
-  sendFeedback('Make your Guess!');
-  setGuessCount(0);
-  setGuessList([]);
-  resetGuessInput();
-}
-
-function resetGuessInput(){
-  $('#userGuess').val('');
-}
-
-function setGuessCount(count){
-  $('.game #count').text(count);
-}
-
-function setGuessList(guesses){
-  if (guesses.length < 1){
-    $('.game #guessList').html('');
-  } else {
-    guesses.forEach(function(guess){
-      $('.game #guessList').append('<li>' + guess + '</li>');    
-    });
+var DISPLAY = {
+  updateDisplays: function(){
+    this.setGuessCount();
+    this.setGuessList();
+    this.resetGuessInput();
+  },
+  
+  resetGuessInput: function(){
+    $('#userGuess').val('');
+  },
+  
+  setGuessCount: function(){
+    $('.game #count').text(GAME.guesses.length);
+  },
+  
+  setGuessList: function(){
+    $('#guessList').html(generateGuessListHtml());
+  },
+  
+  sendFeedback: function(msg){
+    $('#feedback').text(msg);
   }
+}
+
+function generateGuessListHtml(){
+  var html = "";
+  GAME.guesses.forEach(function(guess){
+    html += "<li>" + guess + "</li>";
+  });
+  return html;
+}
+
+function addGuess(guess){
+  GAME.guesses.push(guess);  
 }
 
 function submitGuess(e){
@@ -75,16 +89,12 @@ function submitGuess(e){
   var validatedGuess = validateGuess(parseInt($('#userGuess').val()));
   
   if (validatedGuess.error) {
-    sendFeedback(validatedGuess.error);
+    DISPLAY.sendFeedback(validatedGuess.error);
   } else {
     evaluateGuess(validatedGuess.guess);
   }
   
-  resetGuessInput();
-}
-
-function sendFeedback(msg){
-  $('#feedback').text(msg);
+  DISPLAY.resetGuessInput();
 }
 
 function validateGuess(userGuess){
@@ -101,7 +111,13 @@ function validateGuess(userGuess){
 
 function evaluateGuess(guess){
   //check for win condition
+
+  //determine hot/cold
+
   //add guess to list
+  addGuess(guess);
+  DISPLAY.updateDisplays();
+
   //send feedback
-  sendFeedback('Must implement');
+  DISPLAY.sendFeedback('You guessed ' + guess);
 }
