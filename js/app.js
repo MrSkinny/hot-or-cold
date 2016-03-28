@@ -37,25 +37,7 @@ var GAME = {
   },
   target: setTarget(),
   guesses: []
-}
-
-function setTarget(){
-  return Math.floor((Math.random() * 100) + 1);
-}
-
-function newGame(e){
-  GAME.runStatus = true;
-  GAME.target = setTarget();
-  GAME.guesses = [];
-  console.log(GAME.target);
-  DISPLAY.updateDisplays();
-  DISPLAY.sendFeedback('Make your Guess!');
-}
-
-function endGame(){
-  GAME.runStatus = false;
-  $('#guessButton').attr('disabled', true);
-}
+};
 
 var DISPLAY = {
   updateDisplays: function(){
@@ -79,6 +61,23 @@ var DISPLAY = {
   sendFeedback: function(msg){
     $('#feedback').text(msg);
   }
+};
+
+function setTarget(){
+  return Math.floor((Math.random() * 100) + 1);
+}
+
+function newGame(e){
+  GAME.runStatus = true;
+  GAME.target = setTarget();
+  GAME.guesses = [];
+
+  DISPLAY.updateDisplays();
+  DISPLAY.sendFeedback('Make your Guess!');
+}
+
+function endGame(){
+  GAME.runStatus = false;
 }
 
 function generateGuessListHtml(){
