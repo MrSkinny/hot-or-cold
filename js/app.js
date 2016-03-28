@@ -26,6 +26,15 @@ $(document).ready(function(){
 
 var GAME = {
   running: false,
+  set runStatus(state){
+    if (state) {
+      this.running = true;
+      setButtonsDisabledState(false);
+    } else {
+      this.running = false;
+      setButtonsDisabledState(true);
+    }
+  },
   target: setTarget(),
   guesses: []
 }
@@ -35,7 +44,7 @@ function setTarget(){
 }
 
 function newGame(e){
-  GAME.running = true;
+  GAME.runStatus = true;
   GAME.target = setTarget();
   GAME.guesses = [];
   console.log(GAME.target);
@@ -44,7 +53,8 @@ function newGame(e){
 }
 
 function endGame(){
-  GAME.running = false;
+  GAME.runStatus = false;
+  $('#guessButton').attr('disabled', true);
 }
 
 var DISPLAY = {
@@ -113,7 +123,7 @@ function evaluateGuess(guess){
   let hotRating = getHotRating(guess);
 
   //check for win condition
-  if (hotRating === 'win') endGame();
+  if (hotRating === 'WINNER!!') endGame();
   
   //add guess to list
   addGuess(guess);
@@ -127,7 +137,7 @@ function getHotRating(guess){
   let target = GAME.target;
   let diff;
   
-  if ( guess === target ) return "win";
+  if ( guess === target ) return "WINNER!!";
   
   if ( guess < target ) diff = target - guess;
   if ( guess > target ) diff = guess - target;
@@ -146,4 +156,9 @@ function getHotRating(guess){
     return "BOILING!";
   }
   
+}
+
+function setButtonsDisabledState(state){
+  $('#guessButton').attr('disabled', state);
+  $('#userGuess').attr('disabled', state);
 }
