@@ -45,7 +45,6 @@ function newGame(e){
 
 function endGame(){
   GAME.running = false;
-  // disable all buttons except New
 }
 
 var DISPLAY = {
@@ -110,14 +109,41 @@ function validateGuess(userGuess){
 }
 
 function evaluateGuess(guess){
-  //check for win condition
-
   //determine hot/cold
+  let hotRating = getHotRating(guess);
 
+  //check for win condition
+  if (hotRating === 'win') endGame();
+  
   //add guess to list
   addGuess(guess);
   DISPLAY.updateDisplays();
 
   //send feedback
-  DISPLAY.sendFeedback('You guessed ' + guess);
+  DISPLAY.sendFeedback(hotRating);
+}
+
+function getHotRating(guess){
+  let target = GAME.target;
+  let diff;
+  
+  if ( guess === target ) return "win";
+  
+  if ( guess < target ) diff = target - guess;
+  if ( guess > target ) diff = guess - target;
+  
+  if ( diff >= 20 ) {
+    return "ICE ICE BABY";
+  } else if ( diff >= 15 ) {
+    return "Cold";
+  } else if ( diff >= 12 ) {
+    return "Getting warmer...";
+  } else if ( diff >= 8 ) {
+    return "Pretty hot";
+  } else if ( diff >= 4 ) {
+    return "Sweating!!";
+  } else {
+    return "BOILING!";
+  }
+  
 }
